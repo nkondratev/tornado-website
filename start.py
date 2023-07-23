@@ -6,6 +6,11 @@ import os
 import random
 import string
 
+class ViewHandler(tornado.web.RequestHandler):
+    def get(self):
+        files = os.listdir('./uploads')
+        self.render('view.html', files = files)
+
 class MainHandler(tornado.web.RequestHandler):
     def get(self):
         self.render('index.html')
@@ -19,7 +24,7 @@ class UploadHandler(tornado.web.RequestHandler):
         if extension == ".mp4" or extension == ".png" or extension == ".jpg" or extension == ".jpeg":
             fname = ''.join(random.choice(string.ascii_lowercase + string.digits) for x in range(6))
             final_filename= fname+extension
-            output_file = open("website/uploads/" + final_filename, 'wb')
+            output_file = open("./uploads/" + final_filename, 'wb')
             output_file.write(file1['body'])
             self.finish("file" + final_filename + " is uploaded")
         else:
@@ -29,7 +34,8 @@ class UploadHandler(tornado.web.RequestHandler):
 def make_app():
     return tornado.web.Application([
         (r"/", MainHandler),
-        (r"/upload", UploadHandler)
+        (r"/upload", UploadHandler),
+        (r"/view", ViewHandler)
     ], autoreload=True, debug=True)
 
 async def main():
